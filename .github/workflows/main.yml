@@ -1,0 +1,33 @@
+name: Arsenal Bot Saudi Schedule
+
+on:
+  schedule:
+    # 沙特时间 (AST) = UTC + 3
+    # 05:00 UTC = 沙特 08:00
+    # 11:00 UTC = 沙特 14:00 (下午2点)
+    # 15:00 UTC = 沙特 18:00 (晚上6点)
+    # 注意：GitHub 运行可能有几分钟到十几分钟的排队延迟
+    - cron: '5 5,11,15 * * *'
+  workflow_dispatch: # 允许你手动点运行测试
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+        
+      - name: 设置 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          
+      - name: 安装依赖
+        run: pip install requests
+        
+      - name: 运行脚本
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          FOOTBALL_TOKEN: ${{ secrets.FOOTBALL_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python arsenal_bot.py
